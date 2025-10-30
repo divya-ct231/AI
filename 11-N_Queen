@@ -1,0 +1,117 @@
+#Implement a solution for a Constraint Satisfaction Problem using Branch and Bound and 
+Backtracking for n-queens problem. 
+
+Code: 
+# ---------------- N-Queens: Combined Backtracking & Branch-and-Bound ---------------- 
+def is_safe(row, col, assignment): 
+for prev_row in range(row): 
+prev_col = assignment[prev_row] 
+if prev_col == col or abs(prev_col - col) == abs(prev_row - row): 
+return False 
+return True 
+def solve_n_queens_backtracking(n): 
+assignment = [-1] * n 
+solutions = [] 
+def backtrack(row): 
+if row == n: 
+solutions.append(assignment.copy()) 
+return 
+for col in range(n): 
+if is_safe(row, col, assignment): 
+assignment[row] = col 
+backtrack(row + 1) 
+assignment[row] = -1 
+backtrack(0) 
+return solutions 
+def branch_and_bound_n_queens(n): 
+solutions = [] 
+assignment = [-1] * n 
+cols = [True] * n 
+diag1 = [True] * (2 * n - 1) # r - c + (n-1) 
+diag2 = [True] * (2 * n - 1) # r + c 
+def backtrack(row): 
+if row == n: 
+solutions.append(assignment.copy()) 
+return 
+for col in range(n): 
+if cols[col] and diag1[row - col + n - 1] and diag2[row + col]: 
+assignment[row] = col 
+cols[col] = diag1[row - col + n - 1] = diag2[row + col] = False 
+backtrack(row + 1) 
+cols[col] = diag1[row - col + n - 1] = diag2[row + col] = True 
+assignment[row] = -1 
+backtrack(0) 
+return solutions 
+def print_board(solution): 
+n = len(solution) 
+for col in solution: 
+line = ['.'] * n 
+line[col] = 'Q' 
+print(' '.join(line)) 
+print() 
+#  
+Menu Driven Program 
+if  name == " main ": 
+n = None 
+solutions = [] 
+method = None 
+while True: 
+print("\n--- N-Queens Menu ---") 
+print("1. Enter number of queens (N)") 
+print("2. Choose method (1-Backtracking, 2-Branch & Bound)") 
+print("3. Solve N-Queens and show total solutions") 
+print("4. Show one solution") 
+print("5. Show all solutions") 
+print("6. Exit") 
+choice = input("Enter your choice: ") 
+if choice == '1': 
+try: 
+n = int(input("Enter number of queens (N): ")) 
+if n <= 0: 
+print("N must be a positive integer.") 
+n = None 
+else: 
+solutions = [] 
+except ValueError: 
+print("Please enter a valid integer.") 
+n = None 
+elif choice == '2': 
+print("Select Method:") 
+print("1. Backtracking") 
+print("2. Branch & Bound") 
+method_choice = input("Enter method (1 or 2): ") 
+if method_choice == '1': 
+method = 'backtracking' 
+elif method_choice == '2': 
+method = 'branch_and_bound' 
+else: 
+print("Invalid method choice.") 
+elif choice == '3': 
+if n is None: 
+print("Please enter N first (option 1).") 
+elif method is None: 
+print("Please select a method first (option 2).") 
+else: 
+if method == 'backtracking': 
+solutions = solve_n_queens_backtracking(n) 
+else: 
+solutions = branch_and_bound_n_queens(n) 
+print(f"Total solutions found: {len(solutions)}") 
+elif choice == '4': 
+if not solutions: 
+print("No solutions available. Solve N-Queens first (option 3).") 
+else: 
+print("One solution:") 
+print_board(solutions[0]) 
+elif choice == '5': 
+if not solutions: 
+print("No solutions available. Solve N-Queens first (option 3).") 
+else: 
+print(f"All {len(solutions)} solutions:") 
+for sol in solutions: 
+print_board(sol) 
+elif choice == '6': 
+print("Exiting program.") 
+break 
+else: 
+print("Invalid choice. Try again.") 
