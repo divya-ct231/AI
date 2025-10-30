@@ -1,0 +1,79 @@
+#Implement Greedy search algorithm for any of the following application:
+1.Selection Sort
+2.Dijkstra's Minimal Spanning Tree Algorithm
+
+import sys
+
+def selection_sort(arr):
+    n = len(arr)
+    for i in range(n):
+        min_idx = i
+        for j in range(i+1, n):
+            if arr[j] < arr[min_idx]:
+                min_idx = j
+        arr[i], arr[min_idx] = arr[min_idx], arr[i]
+    print("Sorted array:", arr)
+
+def dijkstra(graph, start):
+    n = len(graph)
+    dist = [sys.maxsize] * n
+    dist[start] = 0
+    visited = [False] * n
+
+    for _ in range(n):
+        # Pick the vertex with minimum distance from unvisited
+        min_dist = sys.maxsize
+        u = -1
+        for i in range(n):
+            if not visited[i] and dist[i] < min_dist:
+                min_dist = dist[i]
+                u = i  
+        if u == -1:
+            break
+        visited[u] = True
+
+        # Update distance of adjacent vertices
+        for v in range(n):
+            if graph[u][v] > 0 and not visited[v]:
+                if dist[u] + graph[u][v] < dist[v]:
+                    dist[v] = dist[u] + graph[u][v]
+    print(f"Shortest distances from vertex {start}:")
+    for i in range(n):
+        if dist[i] == sys.maxsize:
+            print(f"Vertex {i}: Unreachable")
+        else:
+            print(f"Vertex {i}: {dist[i]}")
+def main():
+    while True:
+        print("\n=== Menu ===")
+        print("1. Selection Sort")
+        print("2. Dijkstra's Shortest Path Algorithm")
+        print("3. Exit")
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            arr = list(map(int, input("Enter numbers separated by space: ").split()))
+            selection_sort(arr)
+        elif choice == '2':
+            n = int(input("Enter number of vertices: "))
+            print("Enter adjacency matrix row by row (0 if no edge):")
+            graph = []
+            for _ in range(n):
+                row = list(map(int, input().split()))
+                if len(row) != n:
+                    print("Invalid input. Please enter exactly", n, "numbers.")
+                    break
+                graph.append(row)
+            else:
+                start = int(input(f"Enter starting vertex (0 to {n-1}): "))
+                if 0 <= start < n:
+                    dijkstra(graph, start)
+                else:
+                    print("Invalid start vertex.")
+        elif choice == '3':
+            print("Exiting...")
+            break
+        else:
+           print("Invalid choice, try again.")
+if __name__ == "__main__":
+    main()
