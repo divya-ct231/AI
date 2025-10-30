@@ -1,0 +1,91 @@
+#Implement Alpha-Beta Tree search for any game search problem. 
+
+Code: 
+import heapq 
+def a_star(start, goal, neighbors_fn, heuristic_fn): 
+open_set = [] 
+heapq.heappush(open_set, (heuristic_fn(start), 0, start, [start])) 
+closed_set = set() 
+while open_set: 
+f, g, current, path = heapq.heappop(open_set) 
+if current == goal: 
+return path 
+if current in closed_set: 
+continue 
+closed_set.add(current) 
+for neighbor, cost in neighbors_fn(current): 
+if neighbor in closed_set: 
+continue 
+g_new = g + cost 
+f_new = g_new + heuristic_fn(neighbor) 
+heapq.heappush(open_set, (f_new, g_new, neighbor, path + [neighbor])) 
+return None 
+def print_adjacency_matrix(nodes, graph): 
+print("\nAdjacency Matrix (costs):") 
+# Header row 
+print("    " + "  ".join(nodes)) 
+for n1 in nodes: 
+costs = [] 
+for n2 in nodes: 
+# Find cost from n1 to n2 or 0 if no edge 
+cost = 0.0 
+for nei, c in graph[n1]: 
+if nei == n2: 
+                    cost = c 
+                    break 
+            costs.append(f"{cost:.1f}") 
+        print(f"{n1}: " + "  ".join(costs)) 
+    print() 
+ 
+ 
+def main(): 
+    print("=== Shortest Path Finding using A* ===") 
+ 
+    n = int(input("Enter number of nodes: ")) 
+    nodes = input(f"Enter {n} node names separated by space: ").split() 
+ 
+    if len(nodes) != n: 
+        print("Number of nodes entered does not match!") 
+        return 
+ 
+    graph = {node: [] for node in nodes} 
+ 
+    e = int(input("Enter number of edges: ")) 
+    print("Enter edges in format: node1 node2 cost") 
+    for i in range(e): 
+        line = input(f"Edge {i+1}: ").split() 
+        if len(line) != 3: 
+            print("Invalid edge format, skipping.") 
+            continue 
+        n1, n2, cost_str = line 
+        try: 
+            cost = float(cost_str) 
+        except ValueError: 
+            print("Invalid cost value, skipping this edge.") 
+            continue 
+        if n1 not in graph or n2 not in graph: 
+            print(f"Invalid nodes {n1} or {n2}, skipping.") 
+            continue 
+        graph[n1].append((n2, cost)) 
+        graph[n2].append((n1, cost))  # undirected graph 
+ 
+    print_adjacency_matrix(nodes, graph) 
+ 
+    start = input("Enter start node: ").strip() 
+    goal = input("Enter goal node: ").strip() 
+ 
+    if start not in graph or goal not in graph: 
+        print("Start or goal node not in graph!") 
+        return 
+ 
+    heuristic_fn = lambda node: 0  # Zero heuristic = Dijkstra 
+ 
+neighbors_fn = lambda node: graph[node] 
+path = a_star(start, goal, neighbors_fn, heuristic_fn) 
+if path: 
+print("\nShortest path found:") 
+print(" -> ".join(path)) 
+else: 
+print("\nNo path found between", start, "and", goal) 
+if __name__ == "__main__": 
+main()
